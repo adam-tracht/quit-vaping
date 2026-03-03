@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS app_data (
 -- a fallback to ensure the app doesn't crash.
 INSERT INTO app_data (data)
 VALUES ('{
-  "password": "12v6u",
+  "password": "22mvj",
   "dates": {
     "startDate": "2026-03-02",
     "quitDate": "2026-03-10",
