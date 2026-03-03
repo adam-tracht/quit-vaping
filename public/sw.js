@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quit-vaping-v1';
+const CACHE_NAME = 'quit-vaping-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -40,6 +40,16 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Only cache GET requests - POST, PUT, DELETE, etc. should go to network directly
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip caching for API routes to ensure fresh data
+  if (event.request.url.includes('/api/')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((response) => {
       // Cache hit - return response
