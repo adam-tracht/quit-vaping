@@ -20,14 +20,18 @@ export function useLocalStorage() {
         // Try to fetch from API first
         const result = await fetchData();
         // Merge with defaults to ensure all required fields exist
-        // Deep merge to handle nested objects like dates and reminders
-        const apiData = typeof result.data === 'object' && result.data !== null ? result.data : {};
         const defaults = getDefaultAppData();
+
+        // Safely merge API data with defaults
+        const apiData = typeof result.data === 'object' && result.data !== null ? result.data : {};
+
         const mergedData: AppData = {
-          ...defaults,
-          ...apiData,
-          dates: { ...defaults.dates, ...(apiData as any).dates },
-          reminders: { ...defaults.reminders, ...(apiData as any).reminders },
+          password: (apiData as any).password || defaults.password,
+          dates: (apiData as any).dates ? { ...defaults.dates, ...(apiData as any).dates } : defaults.dates,
+          reminders: (apiData as any).reminders ? { ...defaults.reminders, ...(apiData as any).reminders } : defaults.reminders,
+          cravings: (apiData as any).cravings || defaults.cravings,
+          lastPuffTime: (apiData as any).lastPuffTime !== undefined ? (apiData as any).lastPuffTime : defaults.lastPuffTime,
+          pwaInstalled: (apiData as any).pwaInstalled !== undefined ? (apiData as any).pwaInstalled : defaults.pwaInstalled,
         };
         setData(mergedData);
         setSyncStatus('synced');
