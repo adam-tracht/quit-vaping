@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { AppData } from '@/types';
-import { loadAppData, saveAppData } from '@/utils/storage';
+import { loadAppData, saveAppData, getDefaultAppData } from '@/utils/storage';
 import { fetchData, saveData as saveApiData } from '@/utils/api';
 
 export type SyncStatus = 'idle' | 'loading' | 'syncing' | 'synced' | 'error';
@@ -19,11 +19,13 @@ export function useLocalStorage() {
       try {
         // Try to fetch from API first
         const result = await fetchData();
-        setData(result.data as AppData);
+        // Merge with defaults to ensure all required fields exist
+        const mergedData = { ...getDefaultAppData(), ...result.data };
+        setData(mergedData as AppData);
         setSyncStatus('synced');
         setSyncError(null);
         // Also save to localStorage as backup
-        saveAppData(result.data as AppData);
+        saveAppData(mergedData as AppData);
       } catch (error) {
         // Fall back to localStorage if API fails
         console.log('API fetch failed, using localStorage:', error);
