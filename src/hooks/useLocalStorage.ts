@@ -20,7 +20,8 @@ export function useLocalStorage() {
         // Try to fetch from API first
         const result = await fetchData();
         // Merge with defaults to ensure all required fields exist
-        const mergedData = { ...getDefaultAppData(), ...result.data };
+        const apiData = typeof result.data === 'object' && result.data !== null ? result.data : {};
+        const mergedData = { ...getDefaultAppData(), ...apiData };
         setData(mergedData as AppData);
         setSyncStatus('synced');
         setSyncError(null);
