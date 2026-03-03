@@ -1,10 +1,15 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { CravingTimerState, CravingResult } from '@/types';
+import { CravingTimerState, CravingResult, AppData, CravingLog } from '@/types';
 import { CRAVING_STATE_KEY } from '@/types';
-import { addCravingLog, getTodaysCravings } from '@/utils/storage';
 import { CRAVING_TIMER_DURATION, CRAVING_TIPS } from '@/utils/constants';
+import { startOfDay, differenceInDays } from 'date-fns';
 
-export function useCravings() {
+interface UseCravingsProps {
+  addCraving: (craving: Omit<CravingLog, 'id'>) => void;
+  data: AppData | null;
+}
+
+export function useCravings({ addCraving, data }: UseCravingsProps) {
   const [timerState, setTimerState] = useState<CravingTimerState>({
     active: false,
     startTime: null,
@@ -102,26 +107,34 @@ export function useCravings() {
       ? Math.floor((Date.now() - startTimeRef.current) / 1000)
       : undefined;
 
-    addCravingLog({
+    addCraving({
       timestamp: new Date().toISOString(),
       result,
       duration,
     });
 
     stopTimer();
-  }, [stopTimer]);
+  }, [addCraving, stopTimer]);
 
   const quickLog = useCallback((result: CravingResult) => {
-    addCravingLog({
+    addCraving({
       timestamp: new Date().toISOString(),
       result,
     });
-  }, []);
+  }, [addCraving]);
 
-  const todaysCravings = getTodaysCravings();
+  // Calculate today's cravings from data prop
+  const todaysCravings = useMemo(() => {
+    if (!data) return [];
+    const today = startOfDay(new Date());
+    return data.cravings.filter(log => {
+      const logDate = startOfDay(new Date(log.timestamp));
+      return differenceInDays(today, logDate) === 0;
+    });
+  }, [data]);
 
-  const passedCount = todaysCravings.filter(c => c.result === 'passed').length;
-  const gaveInCount = todaysCravings.filter(c => c.result === 'gave_in').length;
+  const passedCount = useMemo(() => todaysCravings.filter(c => c.result === 'passed').length, [todaysCravings]);
+  const gaveInCount = useMemo(() => todaysCravings.filter(c => c.result === 'gave_in').length, [todaysCravings]);
 
   // Only generate a new tip when the timer becomes active
   const randomTip = useMemo(() => {

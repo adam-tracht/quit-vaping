@@ -21,8 +21,8 @@ function App() {
   const [currentView, setCurrentView] = useState<'dashboard' | 'progress' | 'settings'>('dashboard');
   const [showCravingResult, setShowCravingResult] = useState(false);
   const [showQuickLog, setShowQuickLog] = useState(false);
-  const { isLoaded, syncStatus, syncError } = useLocalStorage();
-  const { timerState, startTimer, stopTimer, logCraving, quickLog, passedCount, gaveInCount, randomTip } = useCravings();
+  const { data, isLoaded, syncStatus, syncError, addCraving } = useLocalStorage();
+  const { timerState, startTimer, stopTimer, logCraving, quickLog, passedCount, gaveInCount, randomTip } = useCravings({ addCraving, data });
   const { needsPermission } = useReminders();
   const { shouldShowiOSPrompt, shouldShowNativePrompt, promptInstall, dismissPrompt } = usePWAPrompt();
 

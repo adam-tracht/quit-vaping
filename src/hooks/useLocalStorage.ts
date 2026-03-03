@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AppData } from '@/types';
+import { AppData, CravingLog } from '@/types';
 import { loadAppData, saveAppData, getDefaultAppData } from '@/utils/storage';
 import { fetchData, saveData as saveApiData } from '@/utils/api';
 
@@ -25,13 +25,22 @@ export function useLocalStorage() {
         // Safely merge API data with defaults
         const apiData = typeof result.data === 'object' && result.data !== null ? result.data : {};
 
+        // Type guards to validate nested objects
+        const hasValidDates = (apiData as any)?.dates &&
+          typeof (apiData as any).dates === 'object' &&
+          Object.keys(defaults.dates).every(key => key in (apiData as any).dates);
+
+        const hasValidReminders = (apiData as any)?.reminders &&
+          typeof (apiData as any).reminders === 'object' &&
+          Object.keys(defaults.reminders).every(key => key in (apiData as any).reminders);
+
         const mergedData: AppData = {
-          password: (apiData as any).password || defaults.password,
-          dates: (apiData as any).dates ? { ...defaults.dates, ...(apiData as any).dates } : defaults.dates,
-          reminders: (apiData as any).reminders ? { ...defaults.reminders, ...(apiData as any).reminders } : defaults.reminders,
-          cravings: (apiData as any).cravings || defaults.cravings,
-          lastPuffTime: (apiData as any).lastPuffTime !== undefined ? (apiData as any).lastPuffTime : defaults.lastPuffTime,
-          pwaInstalled: (apiData as any).pwaInstalled !== undefined ? (apiData as any).pwaInstalled : defaults.pwaInstalled,
+          password: (apiData as any).password ?? defaults.password,
+          dates: hasValidDates ? { ...defaults.dates, ...(apiData as any).dates } : defaults.dates,
+          reminders: hasValidReminders ? { ...defaults.reminders, ...(apiData as any).reminders } : defaults.reminders,
+          cravings: Array.isArray((apiData as any).cravings) ? (apiData as any).cravings : defaults.cravings,
+          lastPuffTime: (apiData as any).lastPuffTime ?? defaults.lastPuffTime,
+          pwaInstalled: (apiData as any).pwaInstalled ?? defaults.pwaInstalled,
         };
         setData(mergedData);
         setSyncStatus('synced');
@@ -88,5 +97,29 @@ export function useLocalStorage() {
     setData(prev => prev ? { ...prev, ...updates } : null);
   }, []);
 
-  return { data, updateData, isLoaded, syncStatus, syncError };
+  // Centralized addCraving function that updates React state
+  // This ensures re-renders are triggered and data is synced to API
+  const addCraving = useCallback((craving: Omit<CravingLog, 'id'>) => {
+    setData(prev => {
+      if (!prev) return null;
+
+      const newLog: CravingLog = {
+        ...craving,
+        id: crypto.randomUUID(),
+      };
+
+      const newCravings = [...prev.cravings, newLog];
+      const newLastPuffTime = craving.result === 'gave_in'
+        ? craving.timestamp
+        : prev.lastPuffTime;
+
+      return {
+        ...prev,
+        cravings: newCravings,
+        lastPuffTime: newLastPuffTime,
+      };
+    });
+  }, []);
+
+  return { data, updateData, isLoaded, syncStatus, syncError, addCraving };
 }

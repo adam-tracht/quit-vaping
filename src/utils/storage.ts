@@ -106,7 +106,10 @@ export function saveAppData(data: AppData): void {
   }
 }
 
-// Add a craving log
+/**
+ * @deprecated Use addCraving from useLocalStorage hook instead.
+ * This function directly modifies localStorage and won't trigger React re-renders or API sync.
+ */
 export function addCravingLog(craving: Omit<CravingLog, 'id'>): CravingLog {
   const data = loadAppData();
   const newLog: CravingLog = {
