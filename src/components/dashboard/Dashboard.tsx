@@ -1,40 +1,29 @@
 import { PhaseBanner } from './PhaseBanner';
-import { CravingButton } from './CravingButton';
 import { TodayStats } from './TodayStats';
 import { StreakDisplay } from './StreakDisplay';
 import { MilestoneCountdown } from './MilestoneCountdown';
 
 interface DashboardProps {
-  onStartCravingTimer: () => void;
-  onQuickLog: () => void;
-  timerActive: boolean;
-  passedCount: number;
-  gaveInCount: number;
+  onLogVape: () => void;
+  todayVapeCount: number;
 }
 
 export function Dashboard({
-  onStartCravingTimer,
-  onQuickLog,
-  timerActive,
-  passedCount,
-  gaveInCount,
+  onLogVape,
+  todayVapeCount,
 }: DashboardProps) {
   return (
     <div className="space-y-4 pb-24">
       <StreakDisplay />
       <PhaseBanner />
       <MilestoneCountdown />
-      <TodayStats passedCount={passedCount} gaveInCount={gaveInCount} />
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          onClick={onQuickLog}
-          disabled={timerActive}
-          className="py-4 px-3 bg-surface border border-border rounded-xl font-medium text-text hover:bg-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-        >
-          Quick Log
-        </button>
-        <CravingButton onPress={onStartCravingTimer} disabled={timerActive} />
-      </div>
+      <TodayStats vapeCount={todayVapeCount} />
+      <button
+        onClick={onLogVape}
+        className="w-full py-4 px-6 bg-primary text-white rounded-xl font-medium text-lg hover:bg-primary/90 transition-colors active:scale-98"
+      >
+        Log Vape
+      </button>
     </div>
   );
 }

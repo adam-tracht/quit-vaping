@@ -14,21 +14,10 @@ export interface ReminderSettings {
   patchEnabled: boolean;
 }
 
-// Craving log types
-export type CravingResult = "passed" | "gave_in" | "ongoing";
-
+// Vape log type
 export interface CravingLog {
   id: string;                 // UUID
-  timestamp: string;          // ISO datetime
-  result: CravingResult;
-  duration?: number;          // Seconds until logged (optional)
-}
-
-// Craving timer state
-export interface CravingTimerState {
-  active: boolean;
-  startTime: number | null;   // Timestamp when timer started
-  duration: number;           // Remaining seconds
+  timestamp: string;          // ISO datetime when vape occurred
 }
 
 // Main app data (stored in localStorage)
@@ -54,4 +43,3 @@ export interface CurrentPhase {
 
 // LocalStorage keys
 export const STORAGE_KEY = "quitVapingData";
-export const CRAVING_STATE_KEY = "cravingState";

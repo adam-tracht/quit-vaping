@@ -87,11 +87,6 @@ self.addEventListener('message', (event) => {
   } else if (event.data && event.data.type === 'CLEAR_NOTIFICATION') {
     const tag = event.data.tag;
     clearScheduledNotification(tag);
-  } else if (event.data && event.data.type === 'SCHEDULE_CRAVING_TIMER') {
-    const durationMs = event.data.durationMs;
-    scheduleCravingTimerNotification(durationMs);
-  } else if (event.data && event.data.type === 'CLEAR_CRAVING_TIMER') {
-    clearCravingTimerNotification();
   }
 });
 
@@ -141,34 +136,6 @@ function showNotification(notification) {
     requireInteraction: false,
     silent: false,
   });
-}
-
-// Schedule a craving timer notification
-function scheduleCravingTimerNotification(durationMs) {
-  // Clear existing craving timer notification
-  clearCravingTimerNotification();
-
-  // Schedule new timeout
-  const timeoutId = setTimeout(() => {
-    self.registration.showNotification("Time's up!", {
-      body: 'Your craving timer is complete. How did it go?',
-      icon: '/icon-192.png',
-      badge: '/icon-192.png',
-      tag: 'craving-timer',
-      requireInteraction: true,
-      silent: false,
-    });
-  }, durationMs);
-
-  scheduledNotifications.set('craving-timer', timeoutId);
-}
-
-// Clear the craving timer notification
-function clearCravingTimerNotification() {
-  if (scheduledNotifications.has('craving-timer')) {
-    clearTimeout(scheduledNotifications.get('craving-timer'));
-    scheduledNotifications.delete('craving-timer');
-  }
 }
 
 // Handle notification click

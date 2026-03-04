@@ -97,29 +97,25 @@ export function useLocalStorage() {
     setData(prev => prev ? { ...prev, ...updates } : null);
   }, []);
 
-  // Centralized addCraving function that updates React state
+  // Centralized logVape function that updates React state
   // This ensures re-renders are triggered and data is synced to API
-  const addCraving = useCallback((craving: Omit<CravingLog, 'id'>) => {
+  const logVape = useCallback(() => {
+    const timestamp = new Date().toISOString();
     setData(prev => {
       if (!prev) return null;
 
       const newLog: CravingLog = {
-        ...craving,
         id: crypto.randomUUID(),
+        timestamp,
       };
-
-      const newCravings = [...prev.cravings, newLog];
-      const newLastPuffTime = craving.result === 'gave_in'
-        ? craving.timestamp
-        : prev.lastPuffTime;
 
       return {
         ...prev,
-        cravings: newCravings,
-        lastPuffTime: newLastPuffTime,
+        cravings: [...prev.cravings, newLog],
+        lastPuffTime: timestamp,
       };
     });
   }, []);
 
-  return { data, updateData, isLoaded, syncStatus, syncError, addCraving };
+  return { data, updateData, isLoaded, syncStatus, syncError, logVape };
 }

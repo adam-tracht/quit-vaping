@@ -1,4 +1,4 @@
-import { AppData, CravingLog, STORAGE_KEY, CRAVING_STATE_KEY } from '@/types';
+import { AppData, CravingLog, STORAGE_KEY } from '@/types';
 import { differenceInDays, startOfDay } from 'date-fns';
 
 // Parse ISO date string as local date (not UTC)
@@ -104,27 +104,6 @@ export function saveAppData(data: AppData): void {
   }
 }
 
-/**
- * @deprecated Use addCraving from useLocalStorage hook instead.
- * This function directly modifies localStorage and won't trigger React re-renders or API sync.
- */
-export function addCravingLog(craving: Omit<CravingLog, 'id'>): CravingLog {
-  const data = loadAppData();
-  const newLog: CravingLog = {
-    ...craving,
-    id: crypto.randomUUID(),
-  };
-  data.cravings.push(newLog);
-
-  // Update lastPuffTime if user gave in
-  if (craving.result === 'gave_in') {
-    data.lastPuffTime = craving.timestamp;
-  }
-
-  saveAppData(data);
-  return newLog;
-}
-
 // Get today's cravings
 export function getTodaysCravings(): CravingLog[] {
   const data = loadAppData();
@@ -211,7 +190,6 @@ export function verifyPassword(input: string, stored: string): boolean {
 // Reset all data
 export function resetAllData(): void {
   localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(CRAVING_STATE_KEY);
 }
 
 // Calculate phase end dates from quit date

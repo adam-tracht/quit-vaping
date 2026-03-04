@@ -32,8 +32,7 @@ export function ProgressChart() {
 
       result.push({
         date: format(date, 'MMM dd'),
-        passed: dayCravings.filter(c => c.result === 'passed').length,
-        gaveIn: dayCravings.filter(c => c.result === 'gave_in').length,
+        vapes: dayCravings.length,
       });
     }
 
@@ -43,7 +42,7 @@ export function ProgressChart() {
   if (chartData.length === 0) {
     return (
       <div className="bg-surface rounded-xl p-8 border border-border text-center">
-        <p className="text-text-muted">No data yet. Start logging your cravings!</p>
+        <p className="text-text-muted">No data yet. Start logging your vapes!</p>
       </div>
     );
   }
@@ -73,14 +72,9 @@ export function ProgressChart() {
             }}
             cursor={{ fill: 'rgba(99, 102, 241, 0.1)' }}
           />
-          <Bar dataKey="passed" name="Passed" stackId="stack">
+          <Bar dataKey="vapes" name="Vapes">
             {chartData.map((_entry, index) => (
-              <Cell key={`cell-passed-${index}`} fill="#10b981" />
-            ))}
-          </Bar>
-          <Bar dataKey="gaveIn" name="Gave In" stackId="stack">
-            {chartData.map((_entry, index) => (
-              <Cell key={`cell-gavein-${index}`} fill="#f43f5e" />
+              <Cell key={`cell-vapes-${index}`} fill="#6366f1" />
             ))}
           </Bar>
         </BarChart>
