@@ -12,8 +12,6 @@ export interface AppDates {
 export interface ReminderSettings {
   patchTime: string;          // "08:00"
   patchEnabled: boolean;
-  nrtTime: string | null;     // null if not set
-  nrtEnabled: boolean;
 }
 
 // Craving log types

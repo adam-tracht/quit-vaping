@@ -48,8 +48,6 @@ export function Settings({ onNavigate }: SettingsProps) {
         settings={data?.reminders || {
           patchTime: '08:00',
           patchEnabled: true,
-          nrtTime: null,
-          nrtEnabled: false,
         }}
         onChange={handleReminderChange}
       />

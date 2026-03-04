@@ -33,7 +33,7 @@ export const getDefaultAppData = (): AppData => {
   quitDate.setDate(quitDate.getDate() + 8);
 
   const phase21End = new Date(quitDate);
-  phase21End.setDate(phase21End.getDate() + 42); // 6 weeks
+  phase21End.setDate(phase21End.getDate() + 28); // 4 weeks
 
   const phase14End = new Date(phase21End);
   phase14End.setDate(phase14End.getDate() + 14); // 2 weeks
@@ -54,8 +54,6 @@ export const getDefaultAppData = (): AppData => {
     reminders: {
       patchTime: '08:00',
       patchEnabled: true,
-      nrtTime: null,
-      nrtEnabled: false,
     },
     cravings: [],
     lastPuffTime: null,
@@ -226,7 +224,7 @@ export function calculatePhaseDates(quitDateStr: string): {
   const quitDate = new Date(quitDateStr);
 
   const phase21End = new Date(quitDate);
-  phase21End.setDate(phase21End.getDate() + 42); // 6 weeks of 21mg
+  phase21End.setDate(phase21End.getDate() + 28); // 4 weeks of 21mg
 
   const phase14End = new Date(phase21End);
   phase14End.setDate(phase14End.getDate() + 14); // 2 weeks of 14mg

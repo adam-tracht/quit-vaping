@@ -23,19 +23,6 @@ export function ReminderSettings({ settings, onChange }: ReminderSettingsProps) 
     onChange({ patchEnabled: enabled });
   };
 
-  const handleNrtTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({ nrtTime: e.target.value });
-  };
-
-  const handleNrtEnabledChange = async (enabled: boolean) => {
-    // Request permission before enabling
-    if (enabled && needsPermission) {
-      const granted = await requestPermission();
-      if (!granted) return;
-    }
-    onChange({ nrtEnabled: enabled, nrtTime: enabled ? settings.nrtTime || '12:00' : null });
-  };
-
   const handleRequestPermission = async () => {
     await requestPermission();
   };
@@ -50,7 +37,7 @@ export function ReminderSettings({ settings, onChange }: ReminderSettingsProps) 
             <div className="flex-1">
               <p className="text-text font-medium mb-1">Enable Notifications</p>
               <p className="text-sm text-text-muted mb-3">
-                Allow notifications to receive patch and medication reminders
+                Allow notifications to receive patch reminders
               </p>
               <button
                 onClick={handleRequestPermission}
@@ -102,40 +89,6 @@ export function ReminderSettings({ settings, onChange }: ReminderSettingsProps) 
               type="time"
               value={settings.patchTime}
               onChange={handlePatchTimeChange}
-              className="w-full px-4 py-2 bg-background border border-border rounded-lg text-text focus:outline-none focus:border-primary"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* NRT Reminder */}
-      <div className="bg-surface rounded-xl p-4 border border-border">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-secondary" />
-            <span className="text-text font-medium">NRT Reminder</span>
-          </div>
-          <button
-            onClick={() => handleNrtEnabledChange(!settings.nrtEnabled)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${
-              settings.nrtEnabled ? 'bg-secondary' : 'bg-background'
-            }`}
-          >
-            <span
-              className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                settings.nrtEnabled ? 'left-7' : 'left-1'
-              }`}
-            />
-          </button>
-        </div>
-
-        {settings.nrtEnabled && (
-          <div>
-            <label className="text-sm text-text-muted block mb-2">Reminder Time</label>
-            <input
-              type="time"
-              value={settings.nrtTime || '12:00'}
-              onChange={handleNrtTimeChange}
               className="w-full px-4 py-2 bg-background border border-border rounded-lg text-text focus:outline-none focus:border-primary"
             />
           </div>

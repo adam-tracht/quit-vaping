@@ -42,24 +42,6 @@ export function useReminders() {
       clearPersistentNotification('patch-reminder');
     }
 
-    if (data.reminders.nrtEnabled && data.reminders.nrtTime) {
-      schedulePersistentNotification({
-        time: data.reminders.nrtTime,
-        title: 'NRT Reminder',
-        body: 'Time for your NRT medication',
-        tag: 'nrt-reminder',
-      });
-
-      scheduleReminder('nrt', data.reminders.nrtTime, () => {
-        showNotification('NRT Reminder', {
-          body: 'Time for your NRT medication',
-          tag: 'nrt-reminder',
-        });
-      });
-    } else {
-      clearPersistentNotification('nrt-reminder');
-    }
-
     return () => clearAllReminders();
   }, [data]);
 
@@ -78,16 +60,6 @@ export function useReminders() {
     });
   }, [data, updateData]);
 
-  const updateNrtReminder = useCallback((enabled: boolean, time: string | null) => {
-    updateData({
-      reminders: {
-        ...data!.reminders,
-        nrtEnabled: enabled,
-        nrtTime: time,
-      },
-    });
-  }, [data, updateData]);
-
   const needsPermission = canShowNotifications() && getNotificationPermission() === 'default';
   const permissionGranted = getNotificationPermission() === 'granted';
   const showIOSBanner = isIOS() && !isStandalone();
@@ -98,7 +70,6 @@ export function useReminders() {
     showIOSBanner,
     requestPermission,
     updatePatchReminder,
-    updateNrtReminder,
     reminders: data?.reminders,
   };
 }

@@ -48,7 +48,7 @@ export function showNotification(title: string, options?: NotificationOptions): 
 
 let reminderTimeouts: Map<string, number> = new Map();
 
-export function scheduleReminder(type: 'patch' | 'nrt', time: string, callback: () => void): void {
+export function scheduleReminder(type: 'patch', time: string, callback: () => void): void {
   // Clear existing timeout for this type
   const existing = reminderTimeouts.get(type);
   if (existing) {
@@ -128,16 +128,12 @@ export function schedulePersistentNotification(notification: Omit<ScheduledNotif
   saveScheduledNotifications(notifications);
 
   // Also schedule with setTimeout for immediate session
-  scheduleReminder(
-    notification.tag === 'patch-reminder' ? 'patch' : 'nrt',
-    notification.time,
-    () => {
-      showNotification(notification.title, {
-        body: notification.body,
-        tag: notification.tag,
-      });
-    }
-  );
+  scheduleReminder('patch', notification.time, () => {
+    showNotification(notification.title, {
+      body: notification.body,
+      tag: notification.tag,
+    });
+  });
 
   // Notify Service Worker if available
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -171,12 +167,8 @@ export function initializeStoredNotifications(callback: (notification: Scheduled
   const notifications = getScheduledNotifications();
 
   notifications.forEach(notification => {
-    scheduleReminder(
-      notification.tag === 'patch-reminder' ? 'patch' : 'nrt',
-      notification.time,
-      () => {
-        callback(notification);
-      }
-    );
+    scheduleReminder('patch', notification.time, () => {
+      callback(notification);
+    });
   });
 }
