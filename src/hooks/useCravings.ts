@@ -3,6 +3,7 @@ import { CravingTimerState, CravingResult, AppData, CravingLog } from '@/types';
 import { CRAVING_STATE_KEY } from '@/types';
 import { CRAVING_TIMER_DURATION, CRAVING_TIPS } from '@/utils/constants';
 import { startOfDay, differenceInDays } from 'date-fns';
+import { requestNotificationPermission, scheduleCravingTimerNotification, clearCravingTimerNotification } from '@/utils/notification';
 
 interface UseCravingsProps {
   addCraving: (craving: Omit<CravingLog, 'id'>) => void;
@@ -92,9 +93,17 @@ export function useCravings({ addCraving, data }: UseCravingsProps) {
       startTime,
       duration: CRAVING_TIMER_DURATION,
     });
+
+    // Request notification permission and schedule timer completion notification
+    requestNotificationPermission().then(granted => {
+      if (granted) {
+        scheduleCravingTimerNotification(CRAVING_TIMER_DURATION * 1000);
+      }
+    });
   }, []);
 
   const stopTimer = useCallback(() => {
+    clearCravingTimerNotification();
     setTimerState({
       active: false,
       startTime: null,
@@ -113,6 +122,7 @@ export function useCravings({ addCraving, data }: UseCravingsProps) {
       duration,
     });
 
+    clearCravingTimerNotification();
     stopTimer();
   }, [addCraving, stopTimer]);
 

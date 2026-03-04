@@ -172,3 +172,50 @@ export function initializeStoredNotifications(callback: (notification: Scheduled
     });
   });
 }
+
+// Craving timer notification utilities
+const CRAVING_TIMER_TAG = 'craving-timer';
+let cravingTimerTimeout: number | null = null;
+
+/**
+ * Schedule a notification to fire when the craving timer completes
+ */
+export function scheduleCravingTimerNotification(durationMs: number): void {
+  // Clear any existing craving timer notification
+  clearCravingTimerNotification();
+
+  // Schedule notification via service worker
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SCHEDULE_CRAVING_TIMER',
+      durationMs,
+    });
+  }
+
+  // Also schedule with setTimeout for immediate session
+  cravingTimerTimeout = window.setTimeout(() => {
+    showNotification("Time's up!", {
+      body: 'Your craving timer is complete. How did it go?',
+      tag: CRAVING_TIMER_TAG,
+      requireInteraction: true,
+    });
+  }, durationMs);
+}
+
+/**
+ * Clear the scheduled craving timer notification
+ */
+export function clearCravingTimerNotification(): void {
+  // Clear local timeout
+  if (cravingTimerTimeout) {
+    clearTimeout(cravingTimerTimeout);
+    cravingTimerTimeout = null;
+  }
+
+  // Clear via service worker
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'CLEAR_CRAVING_TIMER',
+    });
+  }
+}
